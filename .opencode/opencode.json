@@ -1,0 +1,99 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+"mcp": {
+     "github": {
+       "type": "local",
+       "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
+       "enabled": true,
+       "environment": {
+         "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_PERSONAL_ACCESS_TOKEN_HERE"
+       }
+     }
+   },
+  "agent": {
+    "orchestrator": {
+      "model": "quantum/qwen3-coder-next",
+      "mode": "primary",
+      "temperature": 0.2,
+      "description": "Coordinates project workflow. Delegates to specialized subagents like backend-dev, devops, tester, reviewer, debugger, docs-writer, pr-generator, and evaluator. Manages task assignment, progress tracking, and integration of subagent outputs. Ensures cohesive project development and delivery."
+    },
+
+    "task-planner": {
+      "model": "quantum/qwen3-coder-next",
+      "mode": "subagent",
+      "temperature": 0.1,
+      "description": "Breaks large tasks into structured, step-by-step plans before implementation begins."
+    },
+
+    "backend-dev": {
+      "model": "gemma4/Gemma4:31b",
+      "mode": "subagent",
+      "temperature": 0.4,
+      "description": "Handles backend services, database architecture, and backend performance optimization. Uses senior-architect and database-schema-designer skills for complex backend design. Invokes senior-security skill for security best practices in backend development. supabase-postgres-best-practices skill is used for Postgres database design and optimization in Supabase, api-integration-specialist skill is used for integrating third-party APIs with proper authentication, error handling, and rate limiting, clean-code-specialist skill is used to ensure code quality and maintainability in backend development, and code-review skill is used to review backend code for quality, security vulnerabilities, and best practices, code-review skill is used to review backend code for quality, security vulnerabilities, and best practices, systematic-debugging skill is used to identify and fix bugs in backend code, uses python-patterns skill to implement common design patterns in Python for backend development."
+    },
+
+    "devops": {
+      "model": "gemma4/Gemma4:31b",
+      "mode": "subagent",
+      "temperature": 0.2,
+      "description": "Manages deployment, CI/CD pipelines, containerization, and infrastructure monitoring. Uses senior-devops skill for DevOps practices and automation. Invokes senior-security skill for secure deployment and infrastructure management, clean-code-specialist skill is used to ensure code quality and maintainability in DevOps scripts and configurations, and code-review skill is used to review DevOps code for quality, security vulnerabilities, and best practices."
+    },
+
+    "tester": {
+      "model": "quantum/qwen3-coder-next",
+      "mode": "subagent",
+      "temperature": 0.2,
+      "description": "Runs automated and manual tests, writes test cases and coverage reports."
+    },
+
+    "reviewer": {
+      "model": "gemma4/Gemma4:31b",
+      "mode": "subagent",
+      "temperature": 0.1,
+      "description": "Reviews code for quality, security vulnerabilities, and best practices.Uses code-review skill to perform comprehensive code reviews, providing feedback on code quality, security vulnerabilities, and adherence to best practices. Invokes clean-code-specialist skill to ensure code maintainability and readability during the review process.",
+      "tools": {
+        "write": false,
+        "edit": false
+      }
+    },
+
+    "debugger": {
+      "model": "quantum/qwen3-coder-next",
+      "mode": "subagent",
+      "temperature": 0.2,
+      "description": "Debugs runtime issues, traces errors, and proposes fixes."
+    },
+
+    "docs-writer": {
+      "model": "quantum/qwen3-coder-next",
+      "mode": "subagent",
+      "temperature": 0.1,
+      "description": "Generates and maintains project documentation.",
+      "tools": {
+        "bash": false
+      }
+    },
+
+    "pr-generator": {
+      "model": "quantum/qwen3-coder-next",
+      "mode": "subagent",
+      "temperature": 0.1,
+      "description": "Generates pull request descriptions, changelogs, and commit summaries."
+    },
+
+    "evaluator": {
+      "model": "gemma4/Gemma4:31b",
+      "mode": "subagent",
+      "temperature": 0.1,
+      "description": "Evaluates outputs for correctness, completeness, and quality."
+    },
+
+    "github-publisher": {
+      "model": "quantum/qwen3-coder-next",
+      "mode": "subagent",
+      "temperature": 0.1,
+      "description": "Creates a new GitHub repository, generates a professional README and documentation, writes a structured commit message, and pushes the entire project. Invoke when the user wants to publish a local project to GitHub for the first time.",
+      "prompt": "{file:./prompts/github-publisher.txt}"
+    }
+  }
+}
